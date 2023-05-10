@@ -69,7 +69,7 @@ def transformation(data):
             session.execute(update(CustomersUpdate).where(CustomersUpdate.phone == record['phone']).values(record))
 
             # Deleting Data
-            session.execute(delete(CustomersDelete).where(CustomersDelete.phone == record['phone']).values(i))
+            session.execute(delete(CustomersDelete).where(CustomersDelete.phone == record['phone']))
 
             session.commit()
             print(datetime.now().strftime("%H:%M:%S"), 'Ended Inserting Data')
