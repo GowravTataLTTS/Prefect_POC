@@ -1,0 +1,6 @@
+prefect==2.8.7
+pg8000==1.29.4
+GeoAlchemy2==0.13.1
+sqlalchemy==1.4.22
+psycopg2-binary==2.9.5
+schedule
