@@ -57,8 +57,11 @@ def retrieve_data():
 # @task
 def transformation(data):
     with transaction() as session:
+        all_records = [i.phone for i in data]
+        print(datetime.now().strftime("%H:%M:%S"), 'Total Records are ', all_records)
         print(datetime.now().strftime("%H:%M:%S"), 'Started')
         for i in data:
+            print(datetime.now().strftime("%H:%M:%S"), 'Current Record is ', i.phone)
 
             # Inserting Data
             session.execute(insert(CustomersInsert).values(i))
