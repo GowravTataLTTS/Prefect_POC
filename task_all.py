@@ -66,10 +66,10 @@ def transformation(data):
             # Updating data
             record = {'name': i.name.lower(), 'country': i.country.upper(), 'phone': i.phone,
                       'email': i.email.upper()}
-            session.execute(update(CustomersUpdate).where(CustomersUpdate.number == record['phone']).values(record))
+            session.execute(update(CustomersUpdate).where(CustomersUpdate.phone == record['phone']).values(record))
 
             # Deleting Data
-            session.execute(delete(CustomersDelete).where(CustomersDelete.number == record['phone']).values(i))
+            session.execute(delete(CustomersDelete).where(CustomersDelete.phone == record['phone']).values(i))
 
             session.commit()
             print(datetime.now().strftime("%H:%M:%S"), 'Ended Inserting Data')
