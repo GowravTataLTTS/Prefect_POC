@@ -15,8 +15,8 @@ from sqlalchemy import update, insert, delete
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import MetaData, select
-
+from sqlalchemy import MetaData,select
+import time
 metadata = MetaData()
 
 
@@ -57,7 +57,7 @@ def retrieve_data():
 # @task
 def transformation(data):
     with transaction() as session:
-        print(datetime.now().strftime("%H:%M:%S"), 'Started Inserting Data')
+        print(datetime.now().strftime("%H:%M:%S"), 'Started')
         for i in data:
 
             # Inserting Data
@@ -72,6 +72,7 @@ def transformation(data):
             session.execute(delete(CustomersDelete).where(CustomersDelete.phone == record['phone']))
 
             session.commit()
-            print(datetime.now().strftime("%H:%M:%S"), 'Ended Inserting Data')
+            time.sleep(5)
+            print(datetime.now().strftime("%H:%M:%S"), 'Ended')
     return
 
