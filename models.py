@@ -8,7 +8,7 @@ Base = declarative_base(metadata=metadata)
 
 
 class Customers(Base):
-    __tablename__ = 'customer'
+    __tablename__ = 'customers'
     name = Column(Text)
     country = Column(Text, nullable=False)
     phone = Column(Text)
