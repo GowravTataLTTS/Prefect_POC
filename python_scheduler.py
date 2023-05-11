@@ -1,11 +1,4 @@
 #!/usr/bin/python3
-#"""
-#Created on Mon Apr 17 17:47:18 2023
-#
-#@author: gowrav
-#"""
-
-from prefect import task, flow
 from task_all import *
 import schedule
 from multiprocessing import Process
@@ -45,4 +38,4 @@ def run_job():
 
 
 if __name__ == '__main__':
-    trigger()
+    run_job()

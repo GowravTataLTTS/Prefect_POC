@@ -1,21 +1,16 @@
-import time
+#!/usr/bin/python3
+from task_all import *
 from models import Customers, CustomersInsert, CustomersUpdate, CustomersDelete
 from prefect import task, flow
 from subprocess import PIPE, Popen
-import schedule
-from multiprocessing import Process
 from datetime import datetime
 from sqlalchemy import update, insert, delete
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from sqlalchemy import MetaData, select
-import time
-
-metadata = MetaData()
 
 
-# @task
+@task
 def keepalived_status():
     terminal = Popen(['systemctl', 'status', 'keepalived.service'],
                      stdout=PIPE,
@@ -36,7 +31,7 @@ def transaction():
     return session
 
 
-# @task
+@task
 def retrieve_data():
     print(datetime.now().strftime("%H:%M:%S"), 'Started All Users Data')
     with transaction() as session:
@@ -49,30 +44,36 @@ def retrieve_data():
         )
 
 
-# @task
+@task
 def transformation(data):
     with transaction() as session:
-        all_records = [i.phone for i in data]
-        print(datetime.now().strftime("%H:%M:%S"), 'Total Records are ', len(all_records))
-        print(datetime.now().strftime("%H:%M:%S"), 'Started')
-        j = 0
+        print(datetime.now().strftime("%H:%M:%S"), 'Started Inserting Data')
         for i in data:
-            j += 1
-            print(datetime.now().strftime("%H:%M:%S"), f'Record {j}')
-            print(datetime.now().strftime("%H:%M:%S"), 'Processing Record ', i.phone)
-
             # Inserting Data
             session.execute(insert(CustomersInsert).values(i))
-
             # Updating data
             record = {'name': i.name.lower(), 'country': i.country.upper(), 'phone': i.phone,
                       'email': i.email.upper()}
-            session.execute(update(CustomersUpdate).where(CustomersUpdate.phone == record['phone']).values(record))
+            session.execute(update(CustomersUpdate).where(CustomersUpdate.number == record['phone']).values(record))
 
             # Deleting Data
-            session.execute(delete(CustomersDelete).where(CustomersDelete.phone == record['phone']))
+            session.execute(delete(CustomersDelete).where(CustomersDelete.number == new['phone']).values(i))
 
             session.commit()
-            time.sleep(5)
-            print(datetime.now().strftime("%H:%M:%S"), 'Completed Record ', i.phone)
+            print(datetime.now().strftime("%H:%M:%S"), 'Ended Inserting Data')
+    return
+
+
+@flow
+def trigger():
+    status = keepalived_status()
+    print(datetime.now().strftime("%H:%M:%S"), f'Status of keepalived is {status}')
+    if status == "MASTER":
+        print(datetime.now().strftime("%H:%M:%S"), 'Entered Flow')
+        first_data = retrieve_data()
+        updated_data = transformation(first_data)
+        print(datetime.now().strftime("%H:%M:%S"), "Flow is completed")
+        return
+    else:
+        print(datetime.now().strftime("%H:%M:%S"), "BACKUP")
     return
