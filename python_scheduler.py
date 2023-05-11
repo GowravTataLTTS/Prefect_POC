@@ -1,9 +1,9 @@
 #!/usr/bin/python3
-"""
-Created on Mon Apr 17 17:47:18 2023
-
-@author: gowrav
-"""
+#"""
+#Created on Mon Apr 17 17:47:18 2023
+#
+#@author: gowrav
+#"""
 
 from prefect import task, flow
 from task_all import *
@@ -16,7 +16,6 @@ from datetime import datetime
 def trigger():
     first_data = retrieve_data()
     updated_data = transformation(first_data)
-
     return
 
 
