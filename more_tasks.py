@@ -61,7 +61,11 @@ def transformation(data):
         print(datetime.now().strftime("%H:%M:%S"), 'Total Records are ', len(data))
         print(datetime.now().strftime("%H:%M:%S"), 'Started')
         j = 0
-        session.bulk_insert_mappings(CustomersInsert, data)
+        all_records = []
+        for i in data:
+            record = {'name': i.name, 'country': i.country, 'phone': i.phone, 'email': i.email}
+            all_records.append(record)
+        session.bulk_insert_mappings(CustomersInsert, all_records)
         print(datetime.now().strftime("%H:%M:%S"), 'Started Commit')
         session.commit()
         print(datetime.now().strftime("%H:%M:%S"), 'Ended Commit')
