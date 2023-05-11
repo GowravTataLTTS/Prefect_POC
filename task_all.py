@@ -79,6 +79,6 @@ def transformation(data):
             session.execute(delete(CustomersDelete).where(CustomersDelete.phone == record['phone']))
 
             session.commit()
-            # time.sleep(5)
+            time.sleep(5)
             print(datetime.now().strftime("%H:%M:%S"), 'Completed Record ', i.phone)
     return
