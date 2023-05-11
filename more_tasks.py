@@ -5,7 +5,7 @@ Created on Mon Apr 17 19:45:04 2023
 """
 
 import time
-from models import Customers, CustomersInsert, CustomersUpdate, CustomersDelete
+from million_models import Customers, CustomersInsert
 from prefect import task, flow
 from subprocess import PIPE, Popen
 import schedule
