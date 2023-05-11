@@ -23,7 +23,8 @@ def transformation(data):
                   'email': i.email}
         complete_data.append(record)
     with transaction() as session:
-        session.execut(delete(CustomersInsert).all())
+        customers_phone_id = session.query(Customers.phone).distinct()
+        session.execute(delete(CustomersInsert).where(CustomersInsert.phone.in_(customers_phone_id)))
         session.bulk_insert_mappings(CustomersUpdate, complete_data)
         session.bulk_insert_mappings(CustomersDelete, complete_data)
         print("Finished")
