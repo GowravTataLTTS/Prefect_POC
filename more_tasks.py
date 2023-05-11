@@ -44,31 +44,33 @@ def transaction():
 
 # @task
 def retrieve_data():
-    print(datetime.now().strftime("%H:%M:%S"), 'Started All Users Data')
+    print(datetime.now().strftime("%H:%M:%S"), 'Started Fetching Delta Data')
     with transaction() as session:
         customers_phone_id = session.query(CustomersInsert.phone).distinct()
-        return (
+        delta_customers = (
             session.query(Customers.name, Customers.country, Customers.phone, Customers.email)
                 .filter(~Customers.phone.in_(customers_phone_id))
                 .distinct()
                 .all()
         )
+        print(datetime.now().strftime("%H:%M:%S"), 'Finished Fetching Delta Data')
+        return delta_customers
 
 
 # @task
 def transformation(data):
     with transaction() as session:
         print(datetime.now().strftime("%H:%M:%S"), 'Total Records are ', len(data))
-        print(datetime.now().strftime("%H:%M:%S"), 'Started')
+        # print(datetime.now().strftime("%H:%M:%S"), 'Started')
         j = 0
         all_records = []
         for i in data:
             record = {'name': i.name, 'country': i.country, 'phone': i.phone, 'email': i.email}
             all_records.append(record)
         session.bulk_insert_mappings(CustomersInsert, all_records)
-        print(datetime.now().strftime("%H:%M:%S"), 'Started Commit')
+        # print(datetime.now().strftime("%H:%M:%S"), 'Started Commit')
         session.commit()
-        print(datetime.now().strftime("%H:%M:%S"), 'Ended Commit')
+        # print(datetime.now().strftime("%H:%M:%S"), 'Ended Commit')
         # for i in data:
         #    j += 1
         #    print(datetime.now().strftime("%H:%M:%S"), f'Record {j}')
