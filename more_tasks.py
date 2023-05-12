@@ -46,7 +46,7 @@ def transaction():
 def retrieve_data():
     print(datetime.now().strftime("%H:%M:%S"), 'Started Fetching Delta Data')
     with transaction() as session:
-        final_results_new = except_(select([Customers.c.phone]),select([CustomersInsert.c.phone]))
+        final_results_new = except_(select([Customers.phone]),select([CustomersInsert.phone]))
         # customers_phone = union_all(select(Customers.phone).all(), select(CustomersInsert.phone).all()).alias(
         #    'Custom_Union')
         customers_phone = union_all([Customers.phone], [CustomersInsert.phone]).alias('CustomUnion')
