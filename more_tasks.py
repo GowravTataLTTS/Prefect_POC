@@ -46,12 +46,14 @@ def transaction():
 def retrieve_data():
     print(datetime.now().strftime("%H:%M:%S"), 'Started Fetching Delta Data')
     with transaction() as session:
-        customers_phone_id = session.query(CustomersInsert.phone)  # .distinct()
+        customers_phone_id = session.query(CustomersInsert.phone).all()  # .distinct()
+        user_has_seen = session.query(Customers.phone)
+        final_results = session.query(Customers.phone).except_(user_has_seen)
         # customers_phone = union_all(select(Customers.phone).all(), select(CustomersInsert.phone).all()).alias('Custom_Union')
         # all_ids = select([]).group_by(Customers.phone).having()
         delta_customers = (
             session.query(Customers.name, Customers.country, Customers.phone, Customers.email)
-                .filter(Customers.phone.except_(customers_phone_id))
+                .filter(Customers.phone.except_(final_results))
                 .distinct()
                 .all()
         )
