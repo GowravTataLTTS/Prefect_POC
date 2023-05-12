@@ -48,7 +48,7 @@ def retrieve_data():
     with transaction() as session:
         #customers_phone = union_all(select(Customers.phone).all(), select(CustomersInsert.phone).all()).alias(
         #    'Custom_Union')
-        customers_phone = union_all(Customers.query.all(), CustomersInsert.query.all()).alias('CustomUnion')
+        customers_phone = union_all(session.query(Customers).all, session.query(CustomersInsert).all).alias('CustomUnion')
         all_ids = select([customers_phone.phone, customers_phone.count(1)]).group_by(Customers.phone).having(
             customers_phone.count(1) < 2)
         delta_customers = (
