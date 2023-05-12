@@ -47,20 +47,24 @@ def retrieve_data():
     print(datetime.now().strftime("%H:%M:%S"), 'Started Fetching Delta Data')
     with transaction() as session:
         customers_phone = union_all(select([Customers.phone]), select([CustomersInsert.phone])).alias('Custom_Union')
-        #all_ids = select(customers_phone).select([func.phone, func.count(1)]).group_by(func.phone)
-        #new_ids = select([func.phone]).having(func.count < 2)
+        # all_ids = select(customers_phone).select([func.phone, func.count(1)]).group_by(func.phone)
+        # new_ids = select([func.phone]).having(func.count < 2)
 
-        group_query = customers_phone.group_by(func.phone)
-        final_query = group_query.having(func.count() == 1)
+        # group_query = customers_phone.group_by(func.phone)
+        # final_query = group_query.having(func.count() == 1)
+        #
+        # delta_customers = (
+        #    session.query(Customers.name, Customers.country, Customers.phone, Customers.email)
+        #        .filter(Customers.phone.in_(final_query))
+        #        .distinct()
+        #        .all()
+        # )
+        return session.execute("SELECT name, country,phone, email FROM",
+                               "(SELECT * FROM customers UNION ALL SELECT * FROM customer_insert) AS custom_union",
+                               "GROUP BY name, country,phone, email HAVING count(1) < 2 ;")
 
-        delta_customers = (
-            session.query(Customers.name, Customers.country, Customers.phone, Customers.email)
-                .filter(Customers.phone.in_(final_query))
-                .distinct()
-                .all()
-        )
-        print(datetime.now().strftime("%H:%M:%S"), 'Finished Fetching Delta Data')
-        return delta_customers
+        # print(datetime.now().strftime("%H:%M:%S"), 'Finished Fetching Delta Data')
+        # return delta_customers
 
 
 # @task
