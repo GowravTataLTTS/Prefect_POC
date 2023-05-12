@@ -52,7 +52,7 @@ def retrieve_data():
 
         delta_customers = (
             session.query(Customers.name, Customers.country, Customers.phone, Customers.email)
-                .filter(Customers.phone.in_(all_ids))
+                .filter(Customers.phone.in_(new_ids))
                 .distinct()
                 .all()
         )
