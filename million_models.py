@@ -11,7 +11,7 @@ class Customers(Base):
     __tablename__ = 'customers'
     name = Column(Text)
     country = Column(Text)
-    phone = Column(Text)
+    phone = Column(Text, primary_key=True)
     email = Column(Text)
 
     def __init__(self, name, country, phone, email):
@@ -28,7 +28,7 @@ class CustomersInsert(Base):
     __tablename__ = 'customer_insert'
     name = Column(Text)
     country = Column(Text)
-    phone = Column(Text)
+    phone = Column(Text, primary_key=True)
     email = Column(Text)
 
     def __init__(self, name, country, phone, email):
