@@ -16,7 +16,7 @@ def prefect_checker():
     print(datetime.now().strftime("%H:%M:%S"), 'Entered Flow')
     status = keepalived_status()
     print(datetime.now().strftime("%H:%M:%S"), f'Status of keepalived is {status}')
-    if status == "MASTER":
+    if status == "KEEPALIVED MASTER":
         trigger()
         print(datetime.now().strftime("%H:%M:%S"), "Flow is completed")
     else:

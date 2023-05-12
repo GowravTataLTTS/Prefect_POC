@@ -17,11 +17,13 @@ metadata = MetaData()
 
 # @task
 def keepalived_status():
-    terminal = Popen(['systemctl', 'status', 'keepalived.service'],
+    terminal = Popen(['ip', 'a', 's', 'ens192'],
                      stdout=PIPE,
                      stderr=PIPE)
     stdout, stderr = terminal.communicate()
-    return stdout.decode().upper().split()[-2]
+    if '10.88.64.134' in stdout.decode():
+        return "KEEPALIVED MASTER"
+    return "KEEPALIVED BACKUP"
 
 
 def transaction():
