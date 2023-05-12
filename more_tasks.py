@@ -11,7 +11,7 @@ from subprocess import PIPE, Popen
 import schedule
 from multiprocessing import Process
 from datetime import datetime
-from sqlalchemy import update, insert, delete, except_, union_all, alias
+from sqlalchemy import update, insert, delete, except_, union_all, alias, func
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -46,15 +46,14 @@ def transaction():
 def retrieve_data():
     print(datetime.now().strftime("%H:%M:%S"), 'Started Fetching Delta Data')
     with transaction() as session:
-       # final_results_new = except_(select([Customers.phone]), select([CustomersInsert.phone]))
-        # customers_phone = union_all(select(Customers.phone).all(), select(CustomersInsert.phone).all()).alias(
-        #    'Custom_Union')
-        # customers_phone = union_all([Customers.phone], [CustomersInsert.phone]).alias('CustomUnion')
-        # all_ids = select([customers_phone.phone, customers_phone.count(1)]).group_by(Customers.phone).having(
-        #    customers_phone.count(1) < 2)
+        # final_results_new = except_(select([Customers.phone]), select([CustomersInsert.phone]))
+        customers_phone = union_all(select([Customers.phone]), select([CustomersInsert.phone])).alias('Custom_Union')
+        all_ids = select([func.phone, func.count(1)]).group_by(func.phone).having(
+            func.count(1) < 2)
+
         delta_customers = (
             session.query(Customers.name, Customers.country, Customers.phone, Customers.email)
-                .filter(Customers.phone.in_(except_(select([Customers.phone]), select([CustomersInsert.phone]))))
+                .filter(Customers.phone.in_(all_ids))
                 .distinct()
                 .all()
         )
