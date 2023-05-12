@@ -47,7 +47,7 @@ def retrieve_data():
     print(datetime.now().strftime("%H:%M:%S"), 'Started Fetching Delta Data')
     with transaction() as session:
         customers_phone = union_all(select([Customers.phone]), select([CustomersInsert.phone])).alias('Custom_Union')
-        all_ids = select([func.phone, func.count(1)]).select_from(customers_phone).group_by(func.phone).having(
+        all_ids = select([func.phone, func.count(1)]).select(customers_phone).group_by(func.phone).having(
             func.count(1) < 2)
 
         delta_customers = (
