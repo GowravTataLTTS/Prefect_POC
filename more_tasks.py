@@ -47,12 +47,15 @@ def retrieve_data():
     print(datetime.now().strftime("%H:%M:%S"), 'Started Fetching Delta Data')
     with transaction() as session:
         customers_phone = union_all(select([Customers.phone]), select([CustomersInsert.phone])).alias('Custom_Union')
-        all_ids = select(customers_phone).select([func.phone, func.count(1)]).group_by(func.phone)
-        new_ids = select([func.phone]).where(func.count < 2)
+        #all_ids = select(customers_phone).select([func.phone, func.count(1)]).group_by(func.phone)
+        #new_ids = select([func.phone]).having(func.count < 2)
+
+        group_query = customers_phone.group_by(func.phone)
+        final_query = group_query.having(func.count() == 1)
 
         delta_customers = (
             session.query(Customers.name, Customers.country, Customers.phone, Customers.email)
-                .filter(Customers.phone.in_(new_ids))
+                .filter(Customers.phone.in_(final_query))
                 .distinct()
                 .all()
         )
