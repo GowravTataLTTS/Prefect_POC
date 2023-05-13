@@ -60,7 +60,7 @@ def retrieve_data():
         #        .all()
         # )
         return session.execute(
-            "SELECT name, country,phone, email FROM (SELECT * FROM customers UNION ALL SELECT * FROM customer_insert) AS custom_union GROUP BY name, country,phone, email HAVING count(1) < 2 ;").all()
+            "SELECT name, country,phone, email FROM (SELECT * FROM customers_dummy UNION ALL SELECT * FROM customers_dummy_two) AS custom_union GROUP BY name, country,phone, email HAVING count(1) < 2 ;").all()
 
         # print(datetime.now().strftime("%H:%M:%S"), 'Finished Fetching Delta Data')
         # return delta_customers
