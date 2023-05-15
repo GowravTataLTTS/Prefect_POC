@@ -54,8 +54,7 @@ def retrieve_data():
 # @task
 def transformation(data):
     with transaction() as session:
-        all_records = [i.phone for i in data]
-        print(datetime.now().strftime("%H:%M:%S"), 'Total Records are ', len(all_records))
+        print(datetime.now().strftime("%H:%M:%S"), 'Total Records are ', len(data))
         print(datetime.now().strftime("%H:%M:%S"), 'Started')
         j = 0
         for i in data:
