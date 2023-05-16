@@ -8,6 +8,7 @@ from sqlalchemy import update, insert, delete
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from prefect import task, get_run_logger
 
 
 @task
@@ -35,7 +36,8 @@ def transaction():
 
 @task
 def retrieve_data():
-    print(datetime.now().strftime("%H:%M:%S"), 'Started All Users Data')
+    logger = get_run_logger()
+    logger.info(datetime.now().strftime("%H:%M:%S"), 'Started All Users Data')
     with transaction() as session:
         customers_phone_id = session.query(CustomersInsert.phone).distinct()
         return (
@@ -48,8 +50,9 @@ def retrieve_data():
 
 @task
 def transformation(data):
+    logger = get_run_logger()
     with transaction() as session:
-        print(datetime.now().strftime("%H:%M:%S"), 'Started Inserting Data')
+        logger.info(datetime.now().strftime("%H:%M:%S"), 'Started Inserting Data')
         for i in data:
             # Inserting Data
             session.execute(insert(CustomersInsert).values(i))
@@ -62,20 +65,21 @@ def transformation(data):
             session.execute(delete(CustomersDelete).where(CustomersDelete.phone == record['phone']).values(i))
 
             session.commit()
-            print(datetime.now().strftime("%H:%M:%S"), 'Ended Inserting Data')
+            logger.info(datetime.now().strftime("%H:%M:%S"), 'Ended Inserting Data')
     return
 
 
 @flow
 def trigger():
+    logger = get_run_logger()
     status = keepalived_status()
-    print(datetime.now().strftime("%H:%M:%S"), f'Status of keepalived is {status}')
+    logger.info(datetime.now().strftime("%H:%M:%S"), f'Status of keepalived is {status}')
     if status == "KEEPALIVED MASTER":
-        print(datetime.now().strftime("%H:%M:%S"), 'Entered Flow')
+        logger.info(datetime.now().strftime("%H:%M:%S"), 'Entered Flow')
         first_data = retrieve_data()
         updated_data = transformation(first_data)
-        print(datetime.now().strftime("%H:%M:%S"), "Flow is completed")
+        logger.info(datetime.now().strftime("%H:%M:%S"), "Flow is completed")
         return
     else:
-        print(datetime.now().strftime("%H:%M:%S"),  status)
+        logger.info(datetime.now().strftime("%H:%M:%S"),  status)
     return
