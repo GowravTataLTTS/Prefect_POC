@@ -8,7 +8,6 @@ from sqlalchemy import update, insert, delete
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-from prefect import task, get_run_logger
 
 
 @task
@@ -36,8 +35,7 @@ def transaction():
 
 @task
 def retrieve_data():
-    logger = get_run_logger()
-    logger.info('Started All Users Data')
+    print('Started All Users Data')
     with transaction() as session:
         customers_phone_id = session.query(CustomersInsert.phone).distinct()
         return (
@@ -50,14 +48,13 @@ def retrieve_data():
 
 @task
 def transformation(data):
-    logger = get_run_logger()
-    logger.info('Total Records are ', len(data))
-    logger.info('Started')
+    print('Total Records are ', len(data))
+    print('Started')
     with transaction() as session:
-        logger.info('Started Inserting Data')
+        print('Started Inserting Data')
         for i in data:
             # Inserting Data
-            logger.info('Processing Record ', i.phone)
+            print('Processing Record ', i.phone)
 
             # Inserting Data
             session.execute(insert(CustomersInsert).values(i))
@@ -72,21 +69,20 @@ def transformation(data):
 
             session.commit()
             time.sleep(5)
-            logger.info('Completed Record ', i.phone)
+            print('Completed Record ', i.phone)
     return
 
 
 @flow
 def trigger():
-    logger = get_run_logger()
     status = keepalived_status()
-    logger.info(f'Status of keepalived is {status}')
+    print(f'Status of keepalived is {status}')
     if status == "KEEPALIVED MASTER":
-        logger.info('Entered Flow')
+        print('Entered Flow')
         first_data = retrieve_data()
         updated_data = transformation(first_data)
-        logger.info("Flow is completed")
+        print("Flow is completed")
         return
     else:
-        logger.info(status)
+        print(status)
     return
