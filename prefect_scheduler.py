@@ -51,21 +51,28 @@ def retrieve_data():
 @task
 def transformation(data):
     logger = get_run_logger()
+    logger.info(datetime.now().strftime("%H:%M:%S"), 'Total Records are ', len(data))
+    logger.info(datetime.now().strftime("%H:%M:%S"), 'Started')
     with transaction() as session:
         logger.info(datetime.now().strftime("%H:%M:%S"), 'Started Inserting Data')
         for i in data:
             # Inserting Data
+            logger.info(datetime.now().strftime("%H:%M:%S"), 'Processing Record ', i.phone)
+
+            # Inserting Data
             session.execute(insert(CustomersInsert).values(i))
+
             # Updating data
             record = {'name': i.name.lower(), 'country': i.country.upper(), 'phone': i.phone,
                       'email': i.email.upper()}
             session.execute(update(CustomersUpdate).where(CustomersUpdate.phone == record['phone']).values(record))
 
             # Deleting Data
-            session.execute(delete(CustomersDelete).where(CustomersDelete.phone == record['phone']).values(i))
+            session.execute(delete(CustomersDelete).where(CustomersDelete.phone == record['phone']))
 
             session.commit()
-            logger.info(datetime.now().strftime("%H:%M:%S"), 'Ended Inserting Data')
+            time.sleep(5)
+            logger.info(datetime.now().strftime("%H:%M:%S"), 'Completed Record ', i.phone)
     return
 
 
