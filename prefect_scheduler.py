@@ -12,11 +12,13 @@ from sqlalchemy.orm import sessionmaker
 
 @task
 def keepalived_status():
-    terminal = Popen(['systemctl', 'status', 'keepalived.service'],
+    terminal = Popen(['ip', 'a', 's', 'ens192'],
                      stdout=PIPE,
                      stderr=PIPE)
     stdout, stderr = terminal.communicate()
-    return stdout.decode().upper().split()[-2]
+    if '10.88.64.134' in stdout.decode():
+        return "KEEPALIVED MASTER"
+    return "KEEPALIVED BACKUP"
 
 
 def transaction():
@@ -68,12 +70,12 @@ def transformation(data):
 def trigger():
     status = keepalived_status()
     print(datetime.now().strftime("%H:%M:%S"), f'Status of keepalived is {status}')
-    if status == "MASTER":
+    if status == "KEEPALIVED MASTER":
         print(datetime.now().strftime("%H:%M:%S"), 'Entered Flow')
         first_data = retrieve_data()
         updated_data = transformation(first_data)
         print(datetime.now().strftime("%H:%M:%S"), "Flow is completed")
         return
     else:
-        print(datetime.now().strftime("%H:%M:%S"), "BACKUP")
+        print(datetime.now().strftime("%H:%M:%S"),  status)
     return

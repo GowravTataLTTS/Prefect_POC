@@ -15,15 +15,15 @@ import time
 metadata = MetaData()
 
 
-@task
+# @task
 def keepalived_status():
-   terminal = Popen(['ip', 'a', 's', 'ens192'],
-                    stdout=PIPE,
-                    stderr=PIPE)
-   stdout, stderr = terminal.communicate()
-   if '10.88.64.134' in stdout.decode():
-       return "KEEPALIVED MASTER"
-   return "KEEPALIVED BACKUP"
+    terminal = Popen(['ip', 'a', 's', 'ens192'],
+                     stdout=PIPE,
+                     stderr=PIPE)
+    stdout, stderr = terminal.communicate()
+    if '10.88.64.134' in stdout.decode():
+        return "KEEPALIVED MASTER"
+    return "KEEPALIVED BACKUP"
 
 
 def keepalived_status_two():
