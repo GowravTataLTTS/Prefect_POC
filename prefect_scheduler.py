@@ -8,10 +8,12 @@ from sqlalchemy import update, insert, delete
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
+from prefect import get_run_logger
 
 
 @task
 def keepalived_status():
+    logger = get_run_logger()
     terminal = Popen(['ip', 'a', 's', 'ens192'],
                      stdout=PIPE,
                      stderr=PIPE)
@@ -35,7 +37,8 @@ def transaction():
 
 @task
 def retrieve_data():
-    print('Started All Users Data')
+    logger = get_run_logger()
+    logger.info('Started All Users Data')
     with transaction() as session:
         customers_phone_id = session.query(CustomersInsert.phone).distinct()
         return (
@@ -48,13 +51,14 @@ def retrieve_data():
 
 @task
 def transformation(data):
-    print('Total Records are ', len(data))
-    print('Started')
+    logger = get_run_logger()
+    logger.info('Total Records are ', len(data))
+    logger.info('Started')
     with transaction() as session:
-        print('Started Inserting Data')
+        logger.info('Started Inserting Data')
         for i in data:
             # Inserting Data
-            print('Processing Record ', i.phone)
+            logger.info('Processing Record ', i.phone)
 
             # Inserting Data
             session.execute(insert(CustomersInsert).values(i))
@@ -69,20 +73,21 @@ def transformation(data):
 
             session.commit()
             time.sleep(5)
-            print('Completed Record ', i.phone)
+            logger.info('Completed Record ', i.phone)
     return
 
 
 @flow
 def trigger():
+    logger = get_run_logger()
     status = keepalived_status()
-    print(f'Status of keepalived is {status}')
+    logger.info(f'Status of keepalived is {status}')
     if status == "KEEPALIVED MASTER":
-        print('Entered Flow')
+        logger.info('Entered Flow')
         first_data = retrieve_data()
         updated_data = transformation(first_data)
-        print("Flow is completed")
+        logger.info("Flow is completed")
         return
     else:
-        print(status)
+        logger.info(status)
     return
