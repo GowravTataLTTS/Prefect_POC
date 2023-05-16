@@ -37,7 +37,7 @@ def transaction():
 @task
 def retrieve_data():
     logger = get_run_logger()
-    logger.info(datetime.now().strftime("%H:%M:%S"), 'Started All Users Data')
+    logger.info('Started All Users Data')
     with transaction() as session:
         customers_phone_id = session.query(CustomersInsert.phone).distinct()
         return (
@@ -51,13 +51,13 @@ def retrieve_data():
 @task
 def transformation(data):
     logger = get_run_logger()
-    logger.info(datetime.now().strftime("%H:%M:%S"), 'Total Records are ', len(data))
-    logger.info(datetime.now().strftime("%H:%M:%S"), 'Started')
+    logger.info('Total Records are ', len(data))
+    logger.info('Started')
     with transaction() as session:
-        logger.info(datetime.now().strftime("%H:%M:%S"), 'Started Inserting Data')
+        logger.info('Started Inserting Data')
         for i in data:
             # Inserting Data
-            logger.info(datetime.now().strftime("%H:%M:%S"), 'Processing Record ', i.phone)
+            logger.info('Processing Record ', i.phone)
 
             # Inserting Data
             session.execute(insert(CustomersInsert).values(i))
@@ -72,7 +72,7 @@ def transformation(data):
 
             session.commit()
             time.sleep(5)
-            logger.info(datetime.now().strftime("%H:%M:%S"), 'Completed Record ', i.phone)
+            logger.info('Completed Record ', i.phone)
     return
 
 
@@ -80,13 +80,13 @@ def transformation(data):
 def trigger():
     logger = get_run_logger()
     status = keepalived_status()
-    logger.info(datetime.now().strftime("%H:%M:%S"), f'Status of keepalived is {status}')
+    logger.info(f'Status of keepalived is {status}')
     if status == "KEEPALIVED MASTER":
-        logger.info(datetime.now().strftime("%H:%M:%S"), 'Entered Flow')
+        logger.info('Entered Flow')
         first_data = retrieve_data()
         updated_data = transformation(first_data)
-        logger.info(datetime.now().strftime("%H:%M:%S"), "Flow is completed")
+        logger.info("Flow is completed")
         return
     else:
-        logger.info(datetime.now().strftime("%H:%M:%S"),  status)
+        logger.info(status)
     return
