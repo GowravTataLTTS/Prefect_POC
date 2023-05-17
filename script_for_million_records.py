@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 from more_tasks import *
-import schedule
-from multiprocessing import Process
 from datetime import datetime
 
 
