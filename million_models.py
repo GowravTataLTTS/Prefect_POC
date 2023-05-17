@@ -1,5 +1,5 @@
 #!/bin/bash/python3
-from sqlalchemy import Column, MetaData, Text, Integer
+from sqlalchemy import Column, MetaData, Text, Integer, BigInteger
 from sqlalchemy.ext.declarative import declarative_base
 
 metadata = MetaData()
@@ -11,7 +11,7 @@ class Customers(Base):
     __tablename__ = 'customers'
     name = Column(Text)
     country = Column(Text, nullable=False)
-    phone = Column(Text, primary_key=True)
+    phone = Column(BigInteger, primary_key=True)
     email = Column(Text)
 
     def __init__(self, name, country, phone, email):
@@ -28,7 +28,7 @@ class CustomersInsert(Base):
     __tablename__ = 'customer_insert'
     name = Column(Text)
     country = Column(Text, nullable=False)
-    phone = Column(Text, primary_key=True)
+    phone = Column(BigInteger, primary_key=True)
     email = Column(Text)
 
     def __init__(self, name, country, phone, email):
@@ -45,7 +45,7 @@ class CustomersUpdate(Base):
     __tablename__ = 'customer_update'
     name = Column(Text)
     country = Column(Text, nullable=False)
-    phone = Column(Text, primary_key=True)
+    phone = Column(BigInteger, primary_key=True)
     email = Column(Text)
 
     def __init__(self, name, country, phone, email):
@@ -62,7 +62,7 @@ class CustomersDelete(Base):
     __tablename__ = 'customer_delete'
     name = Column(Text)
     country = Column(Text, nullable=False)
-    phone = Column(Text, primary_key=True)
+    phone = Column(BigInteger, primary_key=True)
     email = Column(Text)
 
     def __init__(self, name, country, phone, email):
