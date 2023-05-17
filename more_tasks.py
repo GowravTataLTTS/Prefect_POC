@@ -51,6 +51,7 @@ def retrieve_data():
             session.query(Customers.name, Customers.country, Customers.phone, Customers.email)
                 .filter(Customers.phone.in_(except_(select([Customers.phone]), select([CustomersInsert.phone]))))
                 .distinct()
+                .order_by(Customers.phone)
                 .all()
         )
 
@@ -67,6 +68,7 @@ def retrieve_data_with_original_query():
             session.query(Customers.name, Customers.country, Customers.phone, Customers.email)
                 .filter(~Customers.phone.in_(phone_numbers))
                 .distinct()
+                .order_by(Customers.phone)
                 .all()
         )
 
