@@ -58,6 +58,10 @@ def retrieve_data():
 def retrieve_data_with_original_query():
     print(datetime.now().strftime("%H:%M:%S"), 'Started Fetching Delta Data')
     with transaction() as session:
+        rows = session.query(Customers).count()
+        print('No Of Records in Customers Table are', rows)
+        rows = session.query(CustomersInsert).count()
+        print('No Of Records in Customers Insert Table are', rows)
         phone_numbers = session.query(CustomersInsert.phone).distinct()
         return (
             session.query(Customers.name, Customers.country, Customers.phone, Customers.email)
