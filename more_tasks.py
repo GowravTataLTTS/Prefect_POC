@@ -4,14 +4,10 @@ Created on Mon Apr 17 19:45:04 2023
 @author: gowrav
 """
 
-import time
-from million_models import Customers, CustomersInsert
-from prefect import task, flow
+from million_models import Customers, CustomersInsert, CustomersUpdate, CustomersDelete
 from subprocess import PIPE, Popen
-import schedule
-from multiprocessing import Process
 from datetime import datetime
-from sqlalchemy import update, insert, delete, except_, union_all, alias, func
+from sqlalchemy import update, insert, delete, except_
 import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -46,28 +42,44 @@ def transaction():
 def retrieve_data():
     print(datetime.now().strftime("%H:%M:%S"), 'Started Fetching Delta Data')
     with transaction() as session:
-        customers_phone = union_all(select([Customers.phone]), select([CustomersInsert.phone])).alias('Custom_Union')
-        # all_ids = select(customers_phone).select([func.phone, func.count(1)]).group_by(func.phone)
-        # new_ids = select([func.phone]).having(func.count < 2)
+        return (
 
-        # group_query = customers_phone.group_by(func.phone)
-        # final_query = group_query.having(func.count() == 1)
-        #
-        # delta_customers = (
-        #    session.query(Customers.name, Customers.country, Customers.phone, Customers.email)
-        #        .filter(Customers.phone.in_(final_query))
-        #        .distinct()
-        #        .all()
-        # )
-        return session.execute(
-            "SELECT name, country,phone, email FROM (SELECT * FROM customer_dummy UNION ALL SELECT * FROM customer_dummy_two) AS custom_union GROUP BY name, country,phone, email HAVING count(1) < 2 ;").all()
+            session.query(Customers.name, Customers.country, Customers.phone, Customers.email)
+                .filter(Customers.phone.in_(except_(select([Customers.phone]), select([CustomersInsert.phone]))))
+                .distinct()
+                .all()
+        )
 
-        # print(datetime.now().strftime("%H:%M:%S"), 'Finished Fetching Delta Data')
-        # return delta_customers
+
+def transformation(data):
+    with transaction() as session:
+        print(datetime.now().strftime("%H:%M:%S"), 'Total Records are ', len(data))
+        print(datetime.now().strftime("%H:%M:%S"), 'Started')
+        j = 0
+        for i in data:
+            j += 1
+            print(datetime.now().strftime("%H:%M:%S"), f'Record {j}')
+            print(datetime.now().strftime("%H:%M:%S"), 'Processing Record ', i.phone)
+
+            # Inserting Data
+            session.execute(insert(CustomersInsert).values(i))
+
+            # Updating data
+            record = {'name': i.name.lower(), 'country': i.country.upper(), 'phone': i.phone,
+                      'email': i.email.upper()}
+            session.execute(update(CustomersUpdate).where(CustomersUpdate.phone == record['phone']).values(record))
+
+            # Deleting Data
+            session.execute(delete(CustomersDelete).where(CustomersDelete.phone == record['phone']))
+
+            session.commit()
+            #time.sleep(5)
+            print(datetime.now().strftime("%H:%M:%S"), 'Completed Record ', i.phone)
+    return
 
 
 # @task
-def transformation(data):
+def transformation_original(data):
     with transaction() as session:
         print(datetime.now().strftime("%H:%M:%S"), 'Total Records are ', len(data))
         # print(datetime.now().strftime("%H:%M:%S"), 'Started')
