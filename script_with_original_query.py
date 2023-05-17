@@ -1,12 +1,10 @@
 #!/usr/bin/python3
 from more_tasks import *
-import schedule
-from multiprocessing import Process
 from datetime import datetime
 
 
 def trigger():
-    first_data = retrieve_data()
+    first_data = retrieve_data_with_original_query()
     print(datetime.now().strftime("%H:%M:%S"), 'Ended Fetching Delta Data')
     print(datetime.now().strftime("%H:%M:%S"), 'Number of records are', len(first_data))
     #updated_data = transformation(first_data)

@@ -51,6 +51,18 @@ def retrieve_data():
         )
 
 
+def retrieve_data_with_original_query():
+    print(datetime.now().strftime("%H:%M:%S"), 'Started Fetching Delta Data')
+    with transaction() as session:
+        phone_numbers = session.query(CustomersInsert.phone).distinct()
+        return (
+            session.query(Customers.name, Customers.country, Customers.phone, Customers.email)
+                .filter(~Customers.phone.in_(phone_numbers))
+                .distinct()
+                .all()
+        )
+
+
 def transformation(data):
     with transaction() as session:
         print(datetime.now().strftime("%H:%M:%S"), 'Total Records are ', len(data))
@@ -73,7 +85,7 @@ def transformation(data):
             session.execute(delete(CustomersDelete).where(CustomersDelete.phone == record['phone']))
 
             session.commit()
-            #time.sleep(5)
+            # time.sleep(5)
             print(datetime.now().strftime("%H:%M:%S"), 'Completed Record ', i.phone)
     return
 
