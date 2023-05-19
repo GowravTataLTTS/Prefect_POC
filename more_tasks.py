@@ -50,7 +50,7 @@ def retrieve_data():
         return (
 
             session.query(Customers.name, Customers.country, Customers.phone, Customers.email)
-                .filter(Customers.phone.in_(valid_phone_numbers)
+                .filter(Customers.phone.in_(valid_phone_numbers))
                 .distinct()
                 .order_by(Customers.phone)
                 .all()
