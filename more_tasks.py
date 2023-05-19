@@ -46,10 +46,11 @@ def retrieve_data():
         rows = session.query(CustomersInsert).count()
         print(datetime.now().strftime("%H:%M:%S"), 'No Of Records in Customers Insert Table are', rows)
         print(datetime.now().strftime("%H:%M:%S"), 'Started Fetching Delta Data')
+        valid_phone_numbers = except_(select([Customers.phone]), select([CustomersInsert.phone])))
         return (
 
             session.query(Customers.name, Customers.country, Customers.phone, Customers.email)
-                .filter(Customers.phone.in_(except_(select([Customers.phone]), select([CustomersInsert.phone]))))
+                .filter(Customers.phone.in_(valid_phone_numbers)
                 .distinct()
                 .order_by(Customers.phone)
                 .all()
