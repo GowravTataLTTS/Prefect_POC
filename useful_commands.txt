@@ -1,0 +1,76 @@
+CREATE TABLE customers(name text, country text, phone text,email text );
+CREATE TABLE customer_insert(name text, country text, phone text,email text );
+CREATE TABLE customer_delete(name text, country text, phone text,email text );
+CREATE TABLE customer_update(name text, country text, phone text,email text );
+
+export hostname=10.72.50.176
+export database_name=million
+export user=postgres
+export password=password
+export port=7432
+
+
+SELECT * FROM customer_insert;
+SELECT * FROM customer_update;
+SELECT * FROM customer_delete;
+SELECT * FROM customers;
+
+TRUNCATE TABLE customer_insert;
+TRUNCATE TABLE customer_update;
+TRUNCATE TABLE customer_delete;
+
+SELECT (SELECT COUNT(*) FROM customers) customers, (SELECT COUNT(*) FROM customer_insert) customer_insert, (SELECT COUNT(*) FROM customer_update) customer_update, 
+(SELECT COUNT(*) FROM customer_delete) customer_delete;
+
+-------------------------------
+DELETE FROM customer_insert where phone in (
+SELECT phone FROM (SELECT phone,COUNT(*) AS CNT FROM customer_insert GROUP BY phone HAVING COUNT(*) > 1) as counter);
+
+CREATE TABLE customers(name text, country text, phone text primary key,email text );
+CREATE TABLE customer_insert(name text, country text, phone text primary key,email text );
+CREATE TABLE customer_delete(name text, country text, phone text,email text );
+CREATE TABLE customer_update(name text, country text, phone text,email text );
+
+DROP TABLE IF EXISTS customers;
+DROP TABLE IF EXISTS customer_insert;
+DROP TABLE IF EXISTS customer_delete;
+DROP TABLE IF EXISTS customer_update;
+
+TRUNCATE TABLE customers;
+TRUNCATE TABLE customer_insert;
+TRUNCATE TABLE customer_update;
+TRUNCATE TABLE customer_delete;
+
+SELECT name,country,phone,email FROM customer_dummy
+WHERE phone in (SELECT phone from customer_dummy EXCEPT SELECT phone FROM customer_dummy_two);
+
+SELECT (SELECT COUNT(*) FROM customers) customers, (SELECT COUNT(*) FROM customer_insert) customer_insert;
+
+SELECT (SELECT COUNT(DISTINCT(phone)) FROM customers) customers, (SELECT COUNT(DISTINCT(phone)) FROM customer_insert) customer_insert;
+
+SELECT (SELECT COUNT(*) FROM customers) customers, (SELECT COUNT(*) FROM customer_insert) customer_insert, (SELECT COUNT(*) FROM customer_update) customer_update, 
+(SELECT COUNT(*) FROM customer_delete) customer_delete;
+
+DELETE FROM 
+
+
+INSERT INTO customers (name, country,phone,email)       
+VALUES('John Singh','China','1','david.sargeant@hotmail.com'),
+('Wendy Johnson','USA','2','sallie.boe@yahoo.com'),
+('Raymond Stewart','France','3','jason.hall@outlook.com'),
+('Elisabeth Norton','Japan','4','dixie.terp@outlook.com'),
+('Fabiola Roberts','Brazil','5','ursula.mends@gmail.com'),
+('Alan Bradley','Canada','6','don.williams@yahoo.com'),
+('Lois Maher','Mexico','7','opal.hall@hotmail.com'),
+('John Crowder','Mexico','8','felix.pike@outlook.com'),
+('Darla Davison','France','9','robert.geise@outlook.com'),
+('Calvin Rodriguez','Germany','10','pamela.navarro@outlook.com');
+
+DELETE FROM customer_insert where phone in (
+SELECT phone FROM (SELECT phone,COUNT(*) AS CNT FROM customer_insert GROUP BY phone HAVING COUNT(*) > 1) as counter);
+
+CREATE TABLE customers(name text, country text, phone text,email text );
+CREATE TABLE customer_insert(name text, country text, phone text,email text );
+CREATE TABLE customer_delete(name text, country text, phone text,email text );
+CREATE TABLE customer_update(name text, country text, phone text,email text );
+
